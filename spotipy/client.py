@@ -2,11 +2,12 @@
 
 
 from __future__ import print_function
-import sys
-import requests
+
 import json
+import sys
 import time
 
+import requests
 import six
 
 """ A simple and thin Python library for the Spotify Web API
@@ -53,7 +54,7 @@ class Spotify(object):
     max_get_retries = 10
 
     def __init__(self, auth=None, requests_session=True,
-        client_credentials_manager=None, proxies=None, requests_timeout=None):
+                 client_credentials_manager=None, proxies=None, requests_timeout=None):
         """
         Create a Spotify API object.
 
@@ -111,8 +112,8 @@ class Spotify(object):
 
         if self.trace:  # pragma: no cover
             print()
-            print ('headers', headers)
-            print ('http status', r.status_code)
+            print('headers', headers)
+            print('http status', r.status_code)
             print(method, r.url)
             if payload:
                 print("DATA", json.dumps(payload))
@@ -122,11 +123,11 @@ class Spotify(object):
         except:
             if r.text and len(r.text) > 0 and r.text != 'null':
                 raise SpotifyException(r.status_code,
-                    -1, '%s:\n %s' % (r.url, r.json()['error']['message']),
-                    headers=r.headers)
+                                       -1, '%s:\n %s' % (r.url, r.json()['error']['message']),
+                                       headers=r.headers)
             else:
                 raise SpotifyException(r.status_code,
-                    -1, '%s:\n %s' % (r.url, 'error'), headers=r.headers)
+                                       -1, '%s:\n %s' % (r.url, 'error'), headers=r.headers)
         finally:
             r.connection.close()
         if r.text and len(r.text) > 0 and r.text != 'null':
@@ -155,20 +156,20 @@ class Spotify(object):
                         raise
                     else:
                         sleep_seconds = int(e.headers.get('Retry-After', delay))
-                        print ('retrying ...' + str(sleep_seconds) + 'secs')
+                        print('retrying ...' + str(sleep_seconds) + 'secs')
                         time.sleep(sleep_seconds + 1)
                         delay += 1
                 else:
                     raise
             except Exception as e:
                 raise
-                print ('exception', str(e))
+                print('exception', str(e))
                 # some other exception. Requests have
                 # been know to throw a BadStatusLine exception
                 retries -= 1
                 if retries >= 0:
                     sleep_seconds = int(e.headers.get('Retry-After', delay))
-                    print ('retrying ...' + str(delay) + 'secs')
+                    print('retrying ...' + str(delay) + 'secs')
                     time.sleep(sleep_seconds + 1)
                     delay += 1
                 else:
@@ -227,7 +228,7 @@ class Spotify(object):
         trid = self._get_id('track', track_id)
         return self._get('tracks/' + trid)
 
-    def tracks(self, tracks, market = None):
+    def tracks(self, tracks, market=None):
         """ returns a list of tracks given a list of track IDs, URIs, or URLs
 
             Parameters:
@@ -236,7 +237,7 @@ class Spotify(object):
         """
 
         tlist = [self._get_id('track', t) for t in tracks]
-        return self._get('tracks/?ids=' + ','.join(tlist), market = market)
+        return self._get('tracks/?ids=' + ','.join(tlist), market=market)
 
     def artist(self, artist_id):
         """ returns a single artist given the artist's ID, URI or URL
@@ -399,7 +400,6 @@ class Spotify(object):
                          limit=limit, offset=offset, fields=fields,
                          market=market)
 
-
     def user_playlist_create(self, user, name, public=True, description=''):
         """ Creates a playlist for a user
 
@@ -410,7 +410,6 @@ class Spotify(object):
                 - description - the description of the playlist
         """
         data = {'name': name, 'public': public, 'description': description}
-
 
         return self._post("users/%s/playlists" % (user,), payload=data)
 
@@ -567,7 +566,8 @@ class Spotify(object):
             - user_ids - the ids of the users that you want to check to see if they follow the playlist. Maximum: 5 ids.
 
         """
-        return self._get("users/{}/playlists/{}/followers/contains?ids={}".format(playlist_owner_id, playlist_id, ','.join(user_ids)))
+        return self._get("users/{}/playlists/{}/followers/contains?ids={}".format(playlist_owner_id, playlist_id,
+                                                                                  ','.join(user_ids)))
 
     def me(self):
         """ Get detailed profile information about the current user.
@@ -686,7 +686,7 @@ class Spotify(object):
 
             Parameters:
                 - limit - the number of entities to return
-        '''        
+        '''
         return self._get('me/player/recently-played', limit=limit)
 
     def current_user_saved_albums_add(self, albums=[]):
@@ -875,30 +875,30 @@ class Spotify(object):
                 - id - a track URIs, URLs or IDs
         """
         id = self._get_id('track', id)
-        return self._get('audio-analysis/'+id)
+        return self._get('audio-analysis/' + id)
 
     def devices(self):
         ''' Get a list of user's available devices.
         '''
         return self._get("me/player/devices")
 
-    def current_playback(self, market = None):
+    def current_playback(self, market=None):
         ''' Get information about user's current playback.
 
             Parameters:
                 - market - an ISO 3166-1 alpha-2 country code.
         '''
-        return self._get("me/player", market = market)
+        return self._get("me/player", market=market)
 
-    def currently_playing(self, market = None):
+    def currently_playing(self, market=None):
         ''' Get user's currently playing track.
 
             Parameters:
                 - market - an ISO 3166-1 alpha-2 country code.
         '''
-        return self._get("me/player/currently-playing", market = market)
+        return self._get("me/player/currently-playing", market=market)
 
-    def transfer_playback(self, device_id, force_play = True):
+    def transfer_playback(self, device_id, force_play=True):
         ''' Transfer playback to another device.
             Note that the API accepts a list of device ids, but only
             actually supports one.
@@ -914,7 +914,7 @@ class Spotify(object):
         }
         return self._put("me/player", payload=data)
 
-    def start_playback(self, device_id = None, context_uri = None, uris = None, offset = None):
+    def start_playback(self, device_id=None, context_uri=None, uris=None, offset=None):
         ''' Start or resume user's playback.
 
             Provide a `context_uri` to start playback or a album,
@@ -947,7 +947,7 @@ class Spotify(object):
             data['offset'] = offset
         return self._put(self._append_device_id("me/player/play", device_id), payload=data)
 
-    def pause_playback(self, device_id = None):
+    def pause_playback(self, device_id=None):
         ''' Pause user's playback.
 
             Parameters:
@@ -955,7 +955,7 @@ class Spotify(object):
         '''
         return self._put(self._append_device_id("me/player/pause", device_id))
 
-    def next_track(self, device_id = None):
+    def next_track(self, device_id=None):
         ''' Skip user's playback to next track.
 
             Parameters:
@@ -963,7 +963,7 @@ class Spotify(object):
         '''
         return self._post(self._append_device_id("me/player/next", device_id))
 
-    def previous_track(self, device_id = None):
+    def previous_track(self, device_id=None):
         ''' Skip user's playback to previous track.
 
             Parameters:
@@ -971,7 +971,7 @@ class Spotify(object):
         '''
         return self._post(self._append_device_id("me/player/previous", device_id))
 
-    def seek_track(self, position_ms, device_id = None):
+    def seek_track(self, position_ms, device_id=None):
         ''' Seek to position in current track.
 
             Parameters:
@@ -983,7 +983,7 @@ class Spotify(object):
             return
         return self._put(self._append_device_id("me/player/seek?position_ms=%s" % position_ms, device_id))
 
-    def repeat(self, state, device_id = None):
+    def repeat(self, state, device_id=None):
         ''' Set repeat mode for playback.
 
             Parameters:
@@ -995,7 +995,7 @@ class Spotify(object):
             return
         self._put(self._append_device_id("me/player/repeat?state=%s" % state, device_id))
 
-    def volume(self, volume_percent, device_id = None):
+    def volume(self, volume_percent, device_id=None):
         ''' Set playback volume.
 
             Parameters:
@@ -1010,7 +1010,7 @@ class Spotify(object):
             return
         self._put(self._append_device_id("me/player/volume?volume_percent=%s" % volume_percent, device_id))
 
-    def shuffle(self, state, device_id = None):
+    def shuffle(self, state, device_id=None):
         ''' Toggle playback shuffling.
 
             Parameters:
